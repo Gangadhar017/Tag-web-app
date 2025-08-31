@@ -2,9 +2,39 @@ import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import CodeEditor from "@/components/CodeEditor";
 import FeatureCard from "@/components/FeatureCard";
-import { Cloud, Zap, Database, Shield, Code, Users, GitBranch, Terminal } from "lucide-react";
+import { Cloud, Zap, Database, Shield, Code, Users, GitBranch, Terminal, Play, Eye } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const Landing = () => {
+  const { toast } = useToast();
+
+  const handleGetStarted = () => {
+    toast({
+      title: "Welcome to TAG!",
+      description: "Your cloud IDE is being set up. You'll be coding in seconds!",
+    });
+  };
+
+  const handleWatchDemo = () => {
+    toast({
+      title: "Demo Video",
+      description: "Demo video would be shown here in a modal or new tab",
+    });
+  };
+
+  const handleAPIDemo = () => {
+    toast({
+      title: "API Documentation",
+      description: "Opening comprehensive API documentation...",
+    });
+  };
+
+  const handleSDKDownload = () => {
+    toast({
+      title: "SDK Download",
+      description: "Starting download of TAG development SDK...",
+    });
+  };
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -20,11 +50,12 @@ const Landing = () => {
         <div className="absolute bottom-20 left-1/3 w-20 h-20 bg-primary-light/20 rounded-full blur-xl float" style={{animationDelay: '4s'}}></div>
         
         <div className="container mx-auto text-center relative z-10">
-          <div className="mb-8">
+          <div className="mb-8 relative group">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-accent/10 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
             <img 
               src="/lovable-uploads/b8804ae4-8c4b-4c66-9efe-ab12f66aba51.png" 
               alt="TAG Logo" 
-              className="h-20 w-auto mx-auto mb-6 hover-glow"
+              className="h-20 w-auto mx-auto mb-6 hover-glow transition-all duration-300 group-hover:scale-110 relative z-10"
             />
           </div>
           
@@ -46,10 +77,21 @@ const Landing = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button size="lg" className="px-12 py-4 text-lg font-semibold shadow-hero hover:shadow-glow transition-smooth bg-gradient-to-r from-primary to-accent hover:from-primary-dark hover:to-accent border-0">
+            <Button 
+              size="lg" 
+              className="px-12 py-4 text-lg font-semibold shadow-hero hover:shadow-glow transition-smooth bg-gradient-to-r from-primary to-accent hover:from-primary-dark hover:to-accent border-0 group"
+              onClick={handleGetStarted}
+            >
+              <Play className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
               Start Coding Free
             </Button>
-            <Button variant="outline" size="lg" className="px-8 py-4 text-lg border-2 border-primary/20 hover:border-primary/40 hover:bg-primary/5 transition-smooth">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="px-8 py-4 text-lg border-2 border-primary/20 hover:border-primary/40 hover:bg-primary/5 transition-smooth group"
+              onClick={handleWatchDemo}
+            >
+              <Eye className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
               Watch Demo
             </Button>
           </div>
@@ -226,10 +268,17 @@ const Landing = () => {
                   Extend TAG with our comprehensive RESTful API and webhook system. Build custom workflows and integrate with your existing tools.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                  <Button className="bg-gradient-to-r from-primary to-accent hover:from-primary-dark hover:to-accent border-0 shadow-medium hover:shadow-glow transition-smooth">
+                  <Button 
+                    className="bg-gradient-to-r from-primary to-accent hover:from-primary-dark hover:to-accent border-0 shadow-medium hover:shadow-glow transition-smooth"
+                    onClick={handleAPIDemo}
+                  >
                     Explore API Docs
                   </Button>
-                  <Button variant="outline" className="border-primary/20 hover:border-primary/40 hover:bg-primary/5 transition-smooth">
+                  <Button 
+                    variant="outline" 
+                    className="border-primary/20 hover:border-primary/40 hover:bg-primary/5 transition-smooth"
+                    onClick={handleSDKDownload}
+                  >
                     Download SDK
                   </Button>
                 </div>
@@ -276,15 +325,16 @@ const Landing = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5"></div>
         
         <div className="container mx-auto text-center relative z-10">
-          <div className="mb-8">
+          <div className="mb-8 relative group">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-accent/5 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <img 
               src="/lovable-uploads/b8804ae4-8c4b-4c66-9efe-ab12f66aba51.png" 
               alt="TAG Logo" 
-              className="h-12 w-auto mx-auto mb-4"
+              className="h-12 w-auto mx-auto mb-4 transition-transform duration-300 group-hover:scale-105 relative z-10"
             />
           </div>
           <p className="text-muted-foreground text-lg mb-8 max-w-md mx-auto">
-            Empowering developers with cloud-native coding environments since 2024
+            Empowering developers with cloud-native coding environments since 2025
           </p>
           
           <div className="flex justify-center items-center gap-8 mb-8">

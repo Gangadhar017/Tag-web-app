@@ -1,16 +1,84 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Play, Copy } from "lucide-react";
+import { Play, Copy, RotateCcw } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const CodeEditor = () => {
-  const [code] = useState(`function fibonacci(n) {
+  const [code, setCode] = useState(`function fibonacci(n) {
   if (n <= 1) return n;
   return fibonacci(n - 1) + fibonacci(n - 2);
 }
 
 console.log("Fibonacci(10):", fibonacci(10));`);
 
-  const [output] = useState("Fibonacci(10): 55");
+  const [output, setOutput] = useState("");
+  const [isRunning, setIsRunning] = useState(false);
+  const { toast } = useToast();
+
+  const runCode = async () => {
+    setIsRunning(true);
+    setOutput("Running...");
+    
+    // Simulate code execution
+    setTimeout(() => {
+      try {
+        // Simple evaluation for demo purposes
+        if (code.includes("fibonacci")) {
+          setOutput("Fibonacci(10): 55\n// Execution time: 0.12ms\n// Process completed successfully");
+        } else if (code.includes("console.log")) {
+          const match = code.match(/console\.log\((.*?)\)/);
+          if (match) {
+            setOutput(`${match[1].replace(/['"]/g, '')}\n// Execution time: 0.05ms\n// Process completed successfully`);
+          }
+        } else {
+          setOutput("// Code executed successfully\n// No output to display");
+        }
+        
+        toast({
+          title: "Code executed successfully",
+          description: "Your code ran without errors",
+        });
+      } catch (error) {
+        setOutput(`Error: ${error}\n// Execution failed`);
+        toast({
+          title: "Execution error",
+          description: "There was an error running your code",
+          variant: "destructive",
+        });
+      }
+      setIsRunning(false);
+    }, 1000);
+  };
+
+  const copyCode = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      toast({
+        title: "Code copied",
+        description: "Code has been copied to clipboard",
+      });
+    } catch (error) {
+      toast({
+        title: "Copy failed",
+        description: "Failed to copy code to clipboard",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const resetCode = () => {
+    setCode(`function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+console.log("Fibonacci(10):", fibonacci(10));`);
+    setOutput("");
+    toast({
+      title: "Code reset",
+      description: "Code has been reset to default",
+    });
+  };
 
   return (
     <div className="w-full max-w-4xl mx-auto bg-gradient-to-br from-card to-muted/50 rounded-2xl shadow-hero border border-border/50 overflow-hidden">
@@ -25,13 +93,32 @@ console.log("Fibonacci(10):", fibonacci(10));`);
           <span className="text-sm font-medium text-muted-foreground">main.js</span>
         </div>
         <div className="flex items-center space-x-2">
-          <Button size="sm" variant="ghost" className="h-8 px-3 text-xs hover:bg-primary/10">
+          <Button 
+            size="sm" 
+            variant="ghost" 
+            className="h-8 px-3 text-xs hover:bg-primary/10"
+            onClick={copyCode}
+          >
             <Copy className="w-3 h-3 mr-1" />
             Copy
           </Button>
-          <Button size="sm" className="h-8 px-3 text-xs bg-gradient-to-r from-primary to-accent hover:from-primary-dark hover:to-accent border-0">
+          <Button 
+            size="sm" 
+            variant="ghost" 
+            className="h-8 px-3 text-xs hover:bg-muted/50"
+            onClick={resetCode}
+          >
+            <RotateCcw className="w-3 h-3 mr-1" />
+            Reset
+          </Button>
+          <Button 
+            size="sm" 
+            className="h-8 px-3 text-xs bg-gradient-to-r from-primary to-accent hover:from-primary-dark hover:to-accent border-0"
+            onClick={runCode}
+            disabled={isRunning}
+          >
             <Play className="w-3 h-3 mr-1" />
-            Run
+            {isRunning ? "Running..." : "Run"}
           </Button>
         </div>
       </div>
@@ -40,17 +127,13 @@ console.log("Fibonacci(10):", fibonacci(10));`);
         {/* Code Panel */}
         <div className="p-6">
           <div className="text-sm text-muted-foreground mb-3 font-medium">Code Editor</div>
-          <div className="bg-gradient-to-br from-editor-bg to-editor-bg/90 rounded-lg p-4 font-mono text-sm leading-relaxed min-h-[200px] border border-editor-border">
-            <pre className="text-editor-foreground">
-              <code>
-                <span className="text-code-keyword">function</span> <span className="text-yellow-300">fibonacci</span>(<span className="text-blue-300">n</span>) {"{"}
-                {"\n"}  <span className="text-code-keyword">if</span> (<span className="text-blue-300">n</span> {"<="} <span className="text-green-300">1</span>) <span className="text-code-keyword">return</span> <span className="text-blue-300">n</span>;
-                {"\n"}  <span className="text-code-keyword">return</span> <span className="text-yellow-300">fibonacci</span>(<span className="text-blue-300">n</span> - <span className="text-green-300">1</span>) + <span className="text-yellow-300">fibonacci</span>(<span className="text-blue-300">n</span> - <span className="text-green-300">2</span>);
-                {"\n"}{"}"}
-                {"\n"}
-                {"\n"}<span className="text-blue-300">console</span>.<span className="text-yellow-300">log</span>(<span className="text-code-string">"Fibonacci(10):"</span>, <span className="text-yellow-300">fibonacci</span>(<span className="text-green-300">10</span>));
-              </code>
-            </pre>
+          <div className="bg-gradient-to-br from-editor-bg to-editor-bg/90 rounded-lg border border-editor-border overflow-hidden">
+            <textarea
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              className="w-full h-[200px] p-4 bg-transparent text-editor-foreground font-mono text-sm leading-relaxed resize-none focus:outline-none"
+              placeholder="Write your code here..."
+            />
           </div>
         </div>
 
@@ -58,12 +141,14 @@ console.log("Fibonacci(10):", fibonacci(10));`);
         <div className="p-6">
           <div className="text-sm text-muted-foreground mb-3 font-medium">Console Output</div>
           <div className="bg-gradient-to-br from-editor-bg to-editor-bg/90 rounded-lg p-4 font-mono text-sm leading-relaxed min-h-[200px] border border-editor-border">
-            <div className="text-editor-foreground">
-              <span className="text-code-comment">// Execution time: 0.12ms</span>
-              <br />
-              <span className="text-green-300">{output}</span>
-              <br />
-              <span className="text-code-comment">// Process completed successfully</span>
+            <div className="text-editor-foreground whitespace-pre-wrap">
+              {output || (
+                <>
+                  <span className="text-code-comment">// Click "Run" to execute your code</span>
+                  <br />
+                  <span className="text-code-comment">// Output will appear here...</span>
+                </>
+              )}
             </div>
           </div>
         </div>
